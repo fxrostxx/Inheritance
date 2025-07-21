@@ -170,6 +170,62 @@ public:
 	}
 };
 
+#define GRADUATE_TAKE_PARAMETERS const std::string& thesis_topic, const std::string& supervisor, int grade
+#define GRADUATE_GIVE_PARAMETERS thesis_topic, supervisor, grade
+
+class Graduate : public Student
+{
+private:
+	std::string thesis_topic;
+	std::string supervisor;
+	int grade;
+public:
+	const std::string& get_thesis_topic() const
+	{
+		return thesis_topic;
+	}
+	const std::string& get_supervisor() const
+	{
+		return supervisor;
+	}
+	int get_grade() const
+	{
+		return grade;
+	}
+	void set_thesis_topic(const std::string& thesis_topic)
+	{
+		this->thesis_topic = thesis_topic;
+	}
+	void set_supervisor(const std::string& supervisor)
+	{
+		this->supervisor = supervisor;
+	}
+	void set_grade(int grade)
+	{
+		this->grade = grade;
+	}
+
+	Graduate(HUMAN_TAKE_PARAMETERS, STUDENT_TAKE_PARAMETERS, GRADUATE_TAKE_PARAMETERS)
+		: Student(HUMAN_GIVE_PARAMETERS, STUDENT_GIVE_PARAMETERS)
+	{
+		set_thesis_topic(thesis_topic);
+		set_supervisor(supervisor);
+		set_grade(grade);
+
+		cout << "GConstructor: " << this << endl;
+	}
+	~Graduate()
+	{
+		cout << "GDestructor: " << this << endl;
+	}
+
+	void info() const
+	{
+		Student::info();
+		cout << thesis_topic << ' ' << supervisor << ' ' << grade << endl;
+	}
+};
+
 int main()
 {
 	setlocale(LC_ALL, "rus");
@@ -182,6 +238,10 @@ int main()
 
 	Teacher teacher("White", "Walter", 50, "Chemistry", 25);
 	teacher.info();
+
+	Graduate graduate("Boetticher", "Gale", 30, "Chemistry", "WW_240", 99.9, 100,
+		"Advanced methamphetamine synthesis", "Gustavo Fring", 5);
+	graduate.info();
 
 	return 0;
 }
