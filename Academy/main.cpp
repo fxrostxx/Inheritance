@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <fstream>
 using std::cout;
 using std::cin;
 using std::endl;
@@ -59,6 +60,11 @@ public:
 		cout << last_name << ' ' << first_name << ' ' << age << endl;
 	}
 };
+
+std::ostream& operator<< (std::ostream& os, const Human& obj)
+{
+	return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age();
+}
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
 #define STUDENT_GIVE_PARAMETERS speciality, group, rating, attendance
@@ -250,6 +256,8 @@ int main()
 	graduate.info();
 #endif // INHERITANCE
 
+	std::ofstream fout("group.txt");
+
 	Human* group[]
 	{
 		new Student("Pincman", "Jessie", 22, "Chemistry", "WW_240", 99, 95),
@@ -263,8 +271,13 @@ int main()
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i)
 	{
 		group[i]->info();
+		fout << *group[i] << endl;
 		cout << delimiter << endl;
 	}
+
+	fout.close();
+
+	system("notepad group.txt");
 
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i)
 	{
