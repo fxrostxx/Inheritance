@@ -55,15 +55,15 @@ public:
 		cout << "HDestructor: " << this << endl;
 	}
 
-	virtual void info() const
+	virtual std::ostream& info(std::ostream& os) const
 	{
-		cout << last_name << ' ' << first_name << ' ' << age << endl;
+		return os << last_name << ' ' << first_name << ' ' << age;
 	}
 };
 
 std::ostream& operator<< (std::ostream& os, const Human& obj)
 {
-	return os << obj.get_last_name() << " " << obj.get_first_name() << " " << obj.get_age();
+	return obj.info(os);
 }
 
 #define STUDENT_TAKE_PARAMETERS const std::string& speciality, const std::string& group, double rating, double attendance
@@ -125,10 +125,9 @@ public:
 		cout << "SDestructor: " << this << endl;
 	}
 
-	void info() const override
+	std::ostream& info(std::ostream& os) const override
 	{
-		Human::info();
-		cout << speciality << ' ' << group << ' ' << attendance << endl;
+		return Human::info(os) << ' ' << speciality << ' ' << group << ' ' << attendance;
 	}
 };
 
@@ -171,10 +170,9 @@ public:
 		cout << "TDestructor: " << this << endl;
 	}
 
-	void info() const override
+	std::ostream& info(std::ostream& os) const override
 	{
-		Human::info();
-		cout << speciality << ' ' << experience << endl;
+		return Human::info(os) << ' ' << speciality << ' ' << experience;
 	}
 };
 
@@ -227,10 +225,9 @@ public:
 		cout << "GDestructor: " << this << endl;
 	}
 
-	void info() const override
+	std::ostream& info(std::ostream& os) const override
 	{
-		Student::info();
-		cout << thesis_topic << ' ' << supervisor << ' ' << grade << endl;
+		return Student::info(os) << ' ' << thesis_topic << ' ' << supervisor << ' ' << grade;
 	}
 };
 
@@ -256,6 +253,7 @@ int main()
 	graduate.info();
 #endif // INHERITANCE
 
+#ifdef POLYMORPHISM
 	std::ofstream fout("group.txt");
 
 	Human* group[]
@@ -270,7 +268,7 @@ int main()
 
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i)
 	{
-		group[i]->info();
+		group[i]->info(cout);
 		fout << *group[i] << endl;
 		cout << delimiter << endl;
 	}
@@ -283,6 +281,8 @@ int main()
 	{
 		delete group[i];
 	}
+#endif // POLYMORPHISM
+
 
 	return 0;
 }
