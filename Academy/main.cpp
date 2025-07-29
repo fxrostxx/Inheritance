@@ -1,8 +1,12 @@
-﻿#include <iostream>
+﻿#define _CRT_SECURE_NO_WARNINGS
+
+#include <iostream>
 #include <fstream>
+#include <string>
 using std::cout;
 using std::cin;
 using std::endl;
+
 
 #define delimiter "\n---------------------------------------\n"
 
@@ -127,7 +131,7 @@ public:
 
 	std::ostream& info(std::ostream& os) const override
 	{
-		return Human::info(os) << ' ' << speciality << ' ' << group << ' ' << attendance;
+		return Human::info(os) << ' ' << speciality << ' ' << group << ' ' << rating << ' ' << attendance;
 	}
 };
 
@@ -232,7 +236,8 @@ public:
 };
 
 //#define INHERITANCE
-#define POLYMORPHISM
+//#define POLYMORPHISM
+#define READ_FROM_FILE
 
 int main()
 {
@@ -277,12 +282,59 @@ int main()
 
 	system("notepad group.txt");
 
-	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i)
-	{
-		delete group[i];
-	}
+	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i) delete group[i];
 #endif // POLYMORPHISM
 
+#ifdef READ_FROM_FILE
+	int count{ 0 };
+	const int size{ 10 };
+	Human* group[size]{};
+
+	std::ifstream fin("group.csv");
+
+	if (fin.is_open())
+	{
+		while (!fin.eof() && count < size)
+		{
+			const int bsize{ 256 };
+			char buffer[bsize]{};
+
+			char* fields[15]{};
+			int field_count{ 0 };
+
+			fin.getline(buffer, bsize);
+
+			for (char* token = strtok(buffer, ","); token && field_count < 10; token = strtok(NULL, ","))
+				fields[field_count++] = token;
+
+			if (field_count == 3) group[count++] = new Human(fields[0], fields[1], atoi(fields[2]));
+
+			else if (field_count == 7) group[count++] = new Student
+			(fields[0], fields[1], atoi(fields[2]), fields[3], fields[4], atof(fields[5]), atof(fields[6]));
+
+			else if (field_count == 5) group[count++] = new Teacher
+			(fields[0], fields[1], atoi(fields[2]), fields[3], atoi(fields[4]));
+
+			else if (field_count == 10) group[count++] = new Graduate
+			(fields[0], fields[1], atoi(fields[2]), fields[3], fields[4], atof(fields[5]), atof(fields[6]),
+				fields[7], fields[8], atoi(fields[9]));
+		}
+	}
+	else std::cerr << "Error: File not found" << endl;
+
+	fin.close();
+
+	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i)
+	{
+		if (group[i] != nullptr)
+		{
+			group[i]->info(cout);
+			cout << delimiter << endl;
+		}
+	}
+
+	for (int i = 0; i < count; ++i) delete group[i];
+#endif // READ_FROM_FILE
 
 	return 0;
 }

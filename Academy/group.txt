@@ -1,5 +1,5 @@
-Pincman Jessie 22 Chemistry WW_240 95
+Pincman Jessie 22 Chemistry WW_240 95 99
 White Walter 50 Chemistry 25
-Boetticher Gale 30 Chemistry WW_240 100 Advanced methamphetamine synthesis Gustavo Fring 5
-Verchetty Tommy 30 Theft Vice 99
+Boetticher Gale 30 Chemistry WW_240 99.9 100 Advanced methamphetamine synthesis Gustavo Fring 5
+Verchetty Tommy 30 Theft Vice 98 99
 Diaz Ricardo 50 Weapons distribution 20
