@@ -307,8 +307,47 @@ void Save(Human* group[], const int size, const std::string& filename)
 	system(cmd.c_str());
 }
 
+Human** Load(const std::string& filename, int& size)
+{
+	Human** group = nullptr;
+	std::ifstream fin(filename);
+
+	if (fin.is_open())
+	{
+		size = 0;
+		std::string buffer;
+
+		while (!fin.eof())
+		{
+			std::getline(fin, buffer);
+			if (buffer.size() < 32) continue;
+			++size;
+		}
+		cout << "Количество объектов: " << size << endl;
+
+		group = new Human*[size];
+
+		cout << "Position " << fin.tellg() << endl;
+		fin.clear();
+		fin.seekg(0);
+		cout << "Position " << fin.tellg() << endl;
+
+
+	}
+	else std::cerr << "Error: File not found" << endl;
+
+	fin.close();
+
+	return group;
+}
+
+void Clear(Human* group[], const int size)
+{
+	for (int i = 0; i < size; ++i) delete group[i];
+}
+
 //#define INHERITANCE
-#define POLYMORPHISM
+//#define POLYMORPHISM
 //#define READ_FROM_FILE_OLD
 #define READ_FROM_FILE
 
@@ -346,7 +385,7 @@ int main()
 
 	Save(group, sizeof(group) / sizeof(group[0]), "group.txt");
 
-	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i) delete group[i];
+	Clear(group, sizeof(group) / sizeof(group[0]));
 #endif // POLYMORPHISM
 
 #ifdef READ_FROM_FILE_OLD
@@ -401,7 +440,13 @@ int main()
 #endif // READ_FROM_FILE_OLD
 
 #ifdef READ_FROM_FILE
-	
+
+	int size = 0;
+	Human** group = Load("group.txt", size);
+
+	Print(group, size);
+
+	Clear(group, size);
 #endif // READ_FROM_FILE
 
 
