@@ -16,11 +16,19 @@ using std::endl;
 class Human
 {
 private:
+	static const int TYPE_WIDTH = 12;
+	static const int NAME_WIDTH = 12;
+	static const int AGE_WIDTH = 5;
+	static int count;
 	std::string last_name;
 	std::string first_name;
 	int age;
 
 public:
+	static int get_count()
+	{
+		return count;
+	}
 	const std::string& get_last_name() const
 	{
 		return last_name;
@@ -52,18 +60,33 @@ public:
 		set_first_name(first_name);
 		set_age(age);
 
+		++count;
+
 		cout << "HConstructor: " << this << endl;
 	}
 	virtual ~Human()
 	{
+		--count;
+
 		cout << "HDestructor: " << this << endl;
 	}
 
 	virtual std::ostream& info(std::ostream& os) const
 	{
-		return os << last_name << ' ' << first_name << ' ' << age;
+		os << std::left;
+		os.width(TYPE_WIDTH);
+		os << std::string(strchr(typeid(*this).name(), ' ') + 1) + ":";
+		os.width(NAME_WIDTH);
+		os << last_name;
+		os.width(NAME_WIDTH);
+		os << first_name;
+		os.width(AGE_WIDTH);
+		os << age;
+		return os;
 	}
 };
+
+int Human::count = 0;
 
 std::ostream& operator<< (std::ostream& os, const Human& obj)
 {
@@ -76,6 +99,9 @@ std::ostream& operator<< (std::ostream& os, const Human& obj)
 class Student : public Human
 {
 private:
+	static const int SPECIALITY_WIDTH = 32;
+	static const int GROUP_WIDTH = 8;
+	static const int RAT_WIDTH = 8;
 	std::string speciality;
 	std::string group;
 	double rating;
@@ -131,7 +157,17 @@ public:
 
 	std::ostream& info(std::ostream& os) const override
 	{
-		return Human::info(os) << ' ' << speciality << ' ' << group << ' ' << rating << ' ' << attendance;
+		Human::info(os);
+		os << std::left;
+		os.width(SPECIALITY_WIDTH);
+		os << speciality;
+		os.width(GROUP_WIDTH);
+		os << group;
+		os.width(RAT_WIDTH);
+		os << rating;
+		os.width(RAT_WIDTH);
+		os << attendance;
+		return os;
 	}
 };
 
@@ -141,6 +177,8 @@ public:
 class Teacher : public Human
 {
 private:
+	static const int SPECIALITY_WIDTH = 32;
+	static const int EXPERIENCE_WIDTH = 5;
 	std::string speciality;
 	int experience;
 
@@ -176,7 +214,13 @@ public:
 
 	std::ostream& info(std::ostream& os) const override
 	{
-		return Human::info(os) << ' ' << speciality << ' ' << experience;
+		Human::info(os);
+		os << std::left;
+		os.width(SPECIALITY_WIDTH);
+		os << speciality;
+		os.width(EXPERIENCE_WIDTH);
+		os << experience;
+		return os;
 	}
 };
 
@@ -236,7 +280,8 @@ public:
 };
 
 //#define INHERITANCE
-//#define POLYMORPHISM
+#define POLYMORPHISM
+//#define READ_FROM_FILE_OLD
 #define READ_FROM_FILE
 
 int main()
@@ -278,6 +323,9 @@ int main()
 		cout << delimiter << endl;
 	}
 
+	cout << "Количество объектов: " << group[0]->get_count() << endl;
+	cout << "Количество объектов: " << Human::get_count() << endl;
+
 	fout.close();
 
 	system("notepad group.txt");
@@ -285,7 +333,7 @@ int main()
 	for (int i = 0; i < sizeof(group) / sizeof(group[0]); ++i) delete group[i];
 #endif // POLYMORPHISM
 
-#ifdef READ_FROM_FILE
+#ifdef READ_FROM_FILE_OLD
 	int count{ 0 };
 	const int size{ 10 };
 	Human* group[size]{};
@@ -334,7 +382,12 @@ int main()
 	}
 
 	for (int i = 0; i < count; ++i) delete group[i];
+#endif // READ_FROM_FILE_OLD
+
+#ifdef READ_FROM_FILE
+	
 #endif // READ_FROM_FILE
+
 
 	return 0;
 }
