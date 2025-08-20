@@ -232,6 +232,8 @@ class Graduate : public Student
 private:
 	std::string thesis_topic;
 	std::string supervisor;
+	static const int THESIS_WIDTH = 42;
+	static const int SUPERVISOR_WIDTH = 22;
 	int grade;
 public:
 	const std::string& get_thesis_topic() const
@@ -275,7 +277,13 @@ public:
 
 	std::ostream& info(std::ostream& os) const override
 	{
-		return Student::info(os) << ' ' << thesis_topic << ' ' << supervisor << ' ' << grade;
+		Student::info(os);
+		os << std::left;
+		os.width(THESIS_WIDTH);
+		os << thesis_topic;
+		os.width(SUPERVISOR_WIDTH);
+		os << supervisor;
+		return os;
 	}
 };
 
@@ -315,24 +323,46 @@ Human** Load(const std::string& filename, int& size)
 	if (fin.is_open())
 	{
 		size = 0;
-		std::string buffer;
+		const int bsize{ 256 };
+		char buffer[bsize]{};
 
 		while (!fin.eof())
 		{
-			std::getline(fin, buffer);
-			if (buffer.size() < 32) continue;
+			fin.getline(buffer, bsize);
+			if (strlen(buffer) < 32) continue;
 			++size;
 		}
 		cout << "Количество объектов: " << size << endl;
 
-		group = new Human*[size];
+		group = new Human*[size]{};
+		int index{ 0 };
 
 		cout << "Position " << fin.tellg() << endl;
 		fin.clear();
 		fin.seekg(0);
 		cout << "Position " << fin.tellg() << endl;
 
+		char type[bsize]{};
 
+		while (!fin.eof() && index < size)
+		{
+			fin.getline(buffer, bsize);
+			if (strlen(buffer) < 32) continue;
+
+			int i{ 0 };
+
+			while (buffer[i] != ':')
+			{
+				type[i] = buffer[i];
+				++i;
+			}
+			type[i] = '\0';
+
+			if (type == "Human")
+			{
+
+			}
+		}
 	}
 	else std::cerr << "Error: File not found" << endl;
 

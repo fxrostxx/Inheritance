@@ -1,5 +1,5 @@
 Student:    Pincman     Jessie      22   Chemistry                       WW_240  99      95      
 Teacher:    White       Walter      50   Chemistry                       25   
-Graduate:   Boetticher  Gale        30   Chemistry                       WW_240  99.9    100      Advanced methamphetamine synthesis Gustavo Fring 5
+Graduate:   Boetticher  Gale        30   Chemistry                       WW_240  99.9    100     Advanced methamphetamine synthesis        Gustavo Fring         
 Student:    Verchetty   Tommy       30   Theft                           Vice    98      99      
 Teacher:    Diaz        Ricardo     50   Weapons distribution            20   
