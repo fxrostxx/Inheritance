@@ -339,7 +339,9 @@ public:
 
 		thesis_topic = tz_buffer;
 
-		char sz_buffer[SUPERVISOR_WIDTH + 1] = {};
+		//??????????????????????????????????
+
+		/*char sz_buffer[SUPERVISOR_WIDTH + 1] = {};
 		is.read(sz_buffer, SUPERVISOR_WIDTH);
 
 		for (int i = SUPERVISOR_WIDTH - 1; sz_buffer[i] == ' '; --i) sz_buffer[i] = 0;
@@ -348,7 +350,7 @@ public:
 
 		supervisor = sz_buffer;
 
-		is >> grade;
+		is >> grade;*/
 
 		return is;
 	}
