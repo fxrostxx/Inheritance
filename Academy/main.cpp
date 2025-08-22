@@ -264,7 +264,7 @@ public:
 	}
 };
 
-#define GRADUATE_TAKE_PARAMETERS const std::string& thesis_topic, const std::string& supervisor, int grade
+#define GRADUATE_TAKE_PARAMETERS const std::string& thesis_topic, Teacher& supervisor, int grade
 #define GRADUATE_GIVE_PARAMETERS thesis_topic, supervisor, grade
 
 class Graduate : public Student
@@ -274,14 +274,14 @@ private:
 	static const int SUPERVISOR_WIDTH = 22;
 	static const int GRADE_WIDTH = 8;
 	std::string thesis_topic;
-	std::string supervisor;
+	Teacher& supervisor;
 	int grade;
 public:
 	const std::string& get_thesis_topic() const
 	{
 		return thesis_topic;
 	}
-	const std::string& get_supervisor() const
+	const Teacher& get_supervisor() const
 	{
 		return supervisor;
 	}
@@ -293,10 +293,6 @@ public:
 	{
 		this->thesis_topic = thesis_topic;
 	}
-	void set_supervisor(const std::string& supervisor)
-	{
-		this->supervisor = supervisor;
-	}
 	void set_grade(int grade)
 	{
 		this->grade = grade;
@@ -306,7 +302,7 @@ public:
 		: Student(HUMAN_GIVE_PARAMETERS, STUDENT_GIVE_PARAMETERS)
 	{
 		set_thesis_topic(thesis_topic);
-		set_supervisor(supervisor);
+		supervisor(supervisor);
 		set_grade(grade);
 
 		cout << "GConstructor: " << this << endl;
@@ -323,8 +319,9 @@ public:
 		os.width(THESIS_WIDTH);
 		os << thesis_topic;
 		os.width(SUPERVISOR_WIDTH);
-		os << supervisor;
+		os << (supervisor.get_last_name() + ' ' + supervisor.get_first_name());
 		os.width(GRADE_WIDTH);
+		os << grade;
 		return os;
 	}
 	std::istream& scan(std::istream& is) override
@@ -339,18 +336,16 @@ public:
 
 		thesis_topic = tz_buffer;
 
-		//??????????????????????????????????
-
-		/*char sz_buffer[SUPERVISOR_WIDTH + 1] = {};
+		char sz_buffer[SUPERVISOR_WIDTH + 1] = {};
 		is.read(sz_buffer, SUPERVISOR_WIDTH);
 
 		for (int i = SUPERVISOR_WIDTH - 1; sz_buffer[i] == ' '; --i) sz_buffer[i] = 0;
 		while (sz_buffer[0] == ' ')
 			for (int i = 0; sz_buffer[i]; ++i) sz_buffer[i] = sz_buffer[i + 1];
 
-		supervisor = sz_buffer;
+		//supervisor = sz_buffer;
 
-		is >> grade;*/
+		is >> grade;
 
 		return is;
 	}
@@ -390,7 +385,7 @@ Human* HumanFactory(const std::string& type)
 
 	if (strstr(type.c_str(), "Human")) human = new Human("", "", 0);
 	else if (strstr(type.c_str(), "Student")) human = new Student("", "", 0, "", "", 0, 0);
-	else if (strstr(type.c_str(), "Graduate")) human = new Graduate("", "", 0, "", "", 0, 0, "", "", 0);
+	else if (strstr(type.c_str(), "Graduate")) human = new Graduate("", "", 0, "", "", 0, 0, "", Teacher("", "", 0, "", 0), 0);
 	else if (strstr(type.c_str(), "Teacher")) human = new Teacher("", "", 0, "", 0);
 
 	return human;
@@ -445,9 +440,9 @@ void Clear(Human* group[], const int size)
 }
 
 //#define INHERITANCE
-//#define POLYMORPHISM
+#define POLYMORPHISM
 //#define READ_FROM_FILE_OLD
-#define READ_FROM_FILE
+//#define READ_FROM_FILE
 
 int main()
 {
