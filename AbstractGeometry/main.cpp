@@ -2,6 +2,8 @@
 #include <Windows.h>
 using namespace std;
 
+const double PI = 3.14;
+
 namespace Geometry
 {
 	enum Color
@@ -146,11 +148,17 @@ namespace Geometry
 
 		void set_width(double width)
 		{
-			this->width = width;
+			this->width =
+				width < MIN_SIZE ? MIN_SIZE :
+				width > MAX_SIZE ? MAX_SIZE :
+				width;
 		}
 		void set_height(double height)
 		{
-			this->height = height;
+			this->height =
+				height < MIN_SIZE ? MIN_SIZE :
+				height > MAX_SIZE ? MAX_SIZE :
+				height;
 		}
 		double get_width() const
 		{
@@ -198,6 +206,61 @@ namespace Geometry
 	public:
 		Square(int side, SHAPE_TAKE_PARAMETERS) : Rectangle(side, side, SHAPE_GIVE_PARAMETERS) {}
 	};
+
+	class Circle : public Shape
+	{
+	private:
+		double radius;
+
+	public:
+		Circle(double radius, SHAPE_TAKE_PARAMETERS) : Shape(SHAPE_GIVE_PARAMETERS)
+		{
+			set_radius(radius);
+		}
+
+		void set_radius(double radius)
+		{
+			this->radius =
+				radius < MIN_SIZE / 2 ? MIN_SIZE / 2 :
+				radius > MAX_SIZE / 2 ? MAX_SIZE / 2 :
+				radius;
+		}
+		double get_radius() const
+		{
+			return radius;
+		}
+		double get_area() const override
+		{
+			return PI * radius * radius;
+		}
+		double get_perimeter() const override
+		{
+			return 2 * PI * radius;
+		}
+
+		void draw() const override
+		{
+			HWND hwnd = GetDesktopWindow();
+			HDC hdc = GetDC(hwnd);
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+
+			::Ellipse(hdc, start_x, start_y, start_x + radius * 2, start_y + radius * 2);
+
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+			ReleaseDC(hwnd, hdc);
+		}
+		void info() const override
+		{
+			cout << typeid(*this).name() << endl;
+			cout << "Радиус: " << radius << endl;
+			Shape::info();
+		}
+	};
 }
 
 int main()
@@ -210,10 +273,14 @@ int main()
 	Geometry::Rectangle rect(150, 100, 550, 100, 2, Geometry::Color::Orange);
 	rect.info();
 
+	Geometry::Circle circle(50, 100, 550, 1, Geometry::Color::Green);
+	circle.info();
+
 	while (true)
 	{
 		square.draw();
 		rect.draw();
+		circle.draw();
 	}
 
 	return 0;
