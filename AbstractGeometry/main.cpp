@@ -320,6 +320,161 @@ namespace Geometry
 			ReleaseDC(hwnd, hdc);
 		}
 	};
+
+	class IsoscelesTriangle : public Triangle
+	{
+	private:
+		double side;
+		double base;
+
+	public:
+		IsoscelesTriangle(double side, double base, SHAPE_TAKE_PARAMETERS) : Triangle(SHAPE_GIVE_PARAMETERS)
+		{
+			set_side(side);
+			set_base(base);
+		}
+		void set_side(double side)
+		{
+			this->side = filter_size(side);
+		}
+		double get_side() const
+		{
+			return side;
+		}
+		void set_base(double base)
+		{
+			this->base = filter_size(base);
+		}
+		double get_base() const
+		{
+			return base;
+		}
+		double get_height() const override
+		{
+			return sqrt(pow(side, 2) - pow(base / 2, 2));
+		}
+		double get_area() const override
+		{
+			return base * get_height() / 2;
+		}
+		double get_perimeter() const override
+		{
+			return side * 2 + base;
+		}
+
+		void draw() const override
+		{
+			HWND hwnd = GetDesktopWindow();
+			HDC hdc = GetDC(hwnd);
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+
+			const POINT vertices[] =
+			{
+				{ start_x, start_y + get_height() },
+				{ start_x + base, start_y + get_height() },
+				{ start_x + base / 2, start_y }
+			};
+
+			::Polygon(hdc, vertices, 3);
+
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+			ReleaseDC(hwnd, hdc);
+		}
+	};
+
+	class ScaleneTriangle : public Triangle
+	{
+	private:
+		double side1;
+		double side2;
+		double side3;
+
+	public:
+		ScaleneTriangle(double side1, double side2, double side3, SHAPE_TAKE_PARAMETERS) : Triangle(SHAPE_GIVE_PARAMETERS)
+		{
+			if (side1 + side2 > side3 && side2 + side3 > side1 && side1 + side3 > side2)
+			{
+				set_side1(side1);
+				set_side2(side2);
+				set_side3(side3);
+			}
+			else
+			{
+				set_side1(50);
+				set_side2(50);
+				set_side3(50);
+			}
+		}
+		void set_side1(double side1)
+		{
+			this->side1 = filter_size(side1);
+		}
+		double get_side1() const
+		{
+			return side1;
+		}
+		void set_side2(double side2)
+		{
+			this->side2 = filter_size(side2);
+		}
+		double get_side2() const
+		{
+			return side2;
+		}
+		void set_side3(double side3)
+		{
+			this->side3 = filter_size(side3);
+		}
+		double get_side3() const
+		{
+			return side3;
+		}
+		double get_height() const override
+		{
+			return 2 * get_area() / side1;
+		}
+		double get_area() const override
+		{
+			double halfperimeter = get_perimeter() / 2;
+			return sqrt(halfperimeter * (halfperimeter - side1) * (halfperimeter - side2) * (halfperimeter - side3));
+		}
+		double get_perimeter() const override
+		{
+			return side1 + side2 + side3;
+		}
+
+		void draw() const override
+		{
+			HWND hwnd = GetDesktopWindow();
+			HDC hdc = GetDC(hwnd);
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+
+			double cos_angle = (side2 * side2 + side1 * side1 - side3 * side3) / (2 * side2 * side1);
+			double sin_angle = sqrt(1 - cos_angle * cos_angle);
+
+			const POINT vertices[] =
+			{
+				{ start_x, start_y + get_height() },
+				{ start_x + side1, start_y + get_height() },
+				{ start_x + side2 * cos_angle, start_y + get_height() - side2 * sin_angle }
+			};
+
+			::Polygon(hdc, vertices, 3);
+
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+			ReleaseDC(hwnd, hdc);
+		}
+	};
 }
 
 int main()
@@ -338,12 +493,20 @@ int main()
 	Geometry::EquilateralTriangle e_triangle(50, 550, 350, 1, Geometry::Color::Green);
 	e_triangle.info();
 
+	Geometry::IsoscelesTriangle i_triangle(80, 50, 650, 450, 1, Geometry::Color::Red);
+	i_triangle.info();
+
+	Geometry::ScaleneTriangle s_triangle(40, 50, 80, 750, 550, 1, Geometry::Color::White);
+	s_triangle.info();
+
 	while (true)
 	{
 		square.draw();
 		rect.draw();
 		circle.draw();
 		e_triangle.draw();
+		i_triangle.draw();
+		s_triangle.draw();
 	}
 
 	return 0;
