@@ -27,6 +27,10 @@ namespace Geometry
 		int start_x;
 		int start_y;
 		int line_width;
+		HWND hwnd;
+		HDC hdc;
+		HPEN hPen;
+		HBRUSH hBrush;
 
 	public:
 		static const int MIN_START_X = 100;
@@ -91,6 +95,23 @@ namespace Geometry
 			cout << "Площадь фигуры: " << get_area() << endl;
 			cout << "Периметр фигуры: " << get_perimeter() << endl;
 			draw();
+		}
+
+		void create_drawing_tools()
+		{
+			hwnd = GetDesktopWindow();
+			hdc = GetDC(hwnd);
+			hPen = CreatePen(PS_SOLID, line_width, color);
+			hBrush = CreateSolidBrush(color);
+
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+		}
+		void delete_drawing_tools()
+		{
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+			ReleaseDC(hwnd, hdc);
 		}
 	};
 
@@ -179,19 +200,11 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
+			this->create_drawing_tools();
 
 			::Rectangle(hdc, start_x, start_y, start_x + width, start_y + height);
 
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
+			this->delete_drawing_tools();
 		}
 		void info() const override
 		{
