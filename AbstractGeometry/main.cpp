@@ -86,6 +86,22 @@ namespace Geometry
 		virtual double get_area() const = 0;
 		virtual double get_perimeter() const = 0;
 		virtual void draw() const = 0;
+		virtual void draw(int width, int height, BOOL (__stdcall *DrawFunction)(HDC, int, int, int, int)) const
+		{
+			HWND hwnd = GetDesktopWindow();
+			HDC hdc = GetDC(hwnd);
+			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
+			HBRUSH hBrush = CreateSolidBrush(color);
+
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+
+			DrawFunction(hdc, start_x, start_y, start_x + width, start_y + height);
+
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+			ReleaseDC(hwnd, hdc);
+		}
 		virtual void info() const
 		{
 			cout << "Площадь фигуры: " << get_area() << endl;
@@ -179,19 +195,7 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
-			::DrawFunction(hdc, start_x, start_y, start_x + width, start_y + height);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
+			Shape::draw(width, height, ::Rectangle);
 		}
 		void info() const override
 		{
@@ -241,19 +245,7 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
-			::Ellipse(hdc, start_x, start_y, start_x + get_diameter(), start_y + get_diameter());
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
+			Shape::draw(get_diameter(), get_diameter(), ::Ellipse);
 		}
 	};
 
