@@ -27,6 +27,9 @@ namespace Geometry
 		int start_x;
 		int start_y;
 		int line_width;
+		HDC hdc;
+		HPEN hPen;
+		HBRUSH hBrush;
 
 	public:
 		static const int MIN_START_X = 100;
@@ -40,9 +43,22 @@ namespace Geometry
 
 		Shape(SHAPE_TAKE_PARAMETERS) : color(color)
 		{
+			hdc = GetDC(GetDesktopWindow());
+
 			set_start_x(start_x);
 			set_start_y(start_y);
 			set_line_width(line_width);
+			
+			hPen = CreatePen(PS_SOLID, line_width, color);
+			hBrush = CreateSolidBrush(color);
+			SelectObject(hdc, hPen);
+			SelectObject(hdc, hBrush);
+		}
+		~Shape()
+		{
+			DeleteObject(hBrush);
+			DeleteObject(hPen);
+			ReleaseDC(GetDesktopWindow(), hdc);
 		}
 		void set_start_x(int start_x)
 		{
@@ -179,19 +195,7 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
 			::Rectangle(hdc, start_x, start_y, start_x + width, start_y + height);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
 		}
 		void info() const override
 		{
@@ -241,19 +245,7 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
 			::Ellipse(hdc, start_x, start_y, start_x + get_diameter(), start_y + get_diameter());
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
 		}
 	};
 
@@ -298,14 +290,6 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
 			const POINT vertices[] =
 			{
 				{ start_x, start_y + get_height() },
@@ -314,10 +298,6 @@ namespace Geometry
 			};
 
 			::Polygon(hdc, vertices, 3);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
 		}
 	};
 
@@ -364,14 +344,6 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
 			const POINT vertices[] =
 			{
 				{ start_x, start_y + get_height() },
@@ -380,10 +352,6 @@ namespace Geometry
 			};
 
 			::Polygon(hdc, vertices, 3);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
 		}
 	};
 
@@ -450,14 +418,6 @@ namespace Geometry
 
 		void draw() const override
 		{
-			HWND hwnd = GetDesktopWindow();
-			HDC hdc = GetDC(hwnd);
-			HPEN hPen = CreatePen(PS_SOLID, line_width, color);
-			HBRUSH hBrush = CreateSolidBrush(color);
-
-			SelectObject(hdc, hPen);
-			SelectObject(hdc, hBrush);
-
 			double cos_angle = (side2 * side2 + side1 * side1 - side3 * side3) / (2 * side2 * side1);
 			double sin_angle = sqrt(1 - cos_angle * cos_angle);
 
@@ -469,10 +429,6 @@ namespace Geometry
 			};
 
 			::Polygon(hdc, vertices, 3);
-
-			DeleteObject(hBrush);
-			DeleteObject(hPen);
-			ReleaseDC(hwnd, hdc);
 		}
 	};
 }
